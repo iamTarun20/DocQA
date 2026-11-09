@@ -19,16 +19,16 @@ _INSTRUCTION = re.compile(
 
 def tokens(text: str) -> list[str]:
     """Return lowercase content tokens with simple English plural normalization."""
-    words = re.findall(r"[a-z0-9]+", text.lower())
-    return [
-        word[:-3] + "y"
-        if len(word) > 4 and word.endswith("ies")
-        else word[:-1]
-        if len(word) > 3 and word.endswith("s") and not word.endswith(("ss", "us", "is"))
-        else word
-        for word in words
-        if word not in _STOP
-    ]
+    terms = []
+    for word in re.findall(r"[a-z0-9]+", text.lower()):
+        if word in _STOP:
+            continue
+        if len(word) > 4 and word.endswith("ies"):
+            word = word[:-3] + "y"
+        elif len(word) > 3 and word.endswith("s") and not word.endswith(("ss", "us", "is")):
+            word = word[:-1]
+        terms.append(word)
+    return terms
 
 
 def sentences(text: str) -> list[str]:

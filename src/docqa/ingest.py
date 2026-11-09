@@ -32,9 +32,9 @@ def _sections(markdown: str) -> Iterator[tuple[str, str]]:
     markdown = re.sub(r"<!--(.*?)-->", r" \1 ", markdown, flags=re.DOTALL)
     parts = re.split(r"(?m)^ {0,3}#{1,6}[ \t]+([^\n]+)[ \t]*$", markdown)
     for heading, body in zip(["Overview", *parts[1::2]], parts[::2], strict=True):
-        body = re.sub(r"!?(\[[^\]]+\])\([^)]*\)", lambda match: match[1][1:-1], body)
-        body = re.sub(r"(?m)^ {0,3}(?:[-+*>]\s+|[0-9]+\.\s+|(?:~~~|\x60\x60\x60).*$)", "", body)
-        body = re.sub(r"[*\x60]|_{1,2}(?=\w)|(?<=\w)_{1,2}", "", body)
+        body = re.sub(r"!?\[([^\]]+)\]\([^)]*\)", r"\1", body)
+        body = re.sub(r"(?m)^ {0,3}(?:[-+*>][ \t]+|[0-9]+\.[ \t]+|(?:~~~|```).*$)", "", body)
+        body = re.sub(r"[*`]|_{1,2}(?=\w)|(?<=\w)_{1,2}", "", body)
         cleaned = " ".join(body.split())
         if cleaned:
             yield heading.strip().rstrip("#").strip(), cleaned

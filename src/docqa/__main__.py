@@ -59,7 +59,7 @@ def evaluate(
     smoke: bool = typer.Option(False, help="Use fake embeddings and skip report writes."),
 ) -> None:
     """Run the retrieval and answer benchmark."""
-    from docqa.evaluate import run
+    from docqa.experiments import run
 
     try:
         typer.echo(run(smoke=smoke))

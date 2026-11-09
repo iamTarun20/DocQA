@@ -141,7 +141,12 @@ class DocQA:
         text = self.provider.answer(question, hits)
         cited = list(dict.fromkeys(CITATION.findall(text)))
         chunks = {hit.chunk.citation: hit.chunk for hit in hits}
-        if not cited or any(key not in chunks for key in cited) or instruction_like(text):
+        if (
+            not cited
+            or any(key not in chunks for key in cited)
+            or instruction_like(text)
+            or not CITATION.sub("", text).strip()
+        ):
             return refusal
         sources = tuple(
             Citation(chunks[key].doc_id, chunks[key].section, chunks[key].chunk_id) for key in cited
