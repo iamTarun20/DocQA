@@ -1,0 +1,42 @@
+name: DocQA CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify on ${{ matrix.os }} with Python ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            python-version: "3.11"
+          - os: windows-latest
+            python-version: "3.12"
+    env:
+      HF_HUB_OFFLINE: "1"
+      DOCQA_LOCAL_FILES_ONLY: "1"
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install package and dev dependencies
+        run: python -m pip install -e ".[dev]"
+      - name: Lint and format
+        run: |
+          python -m ruff check .
+          python -m ruff format --check .
+      - name: Tests
+        run: python -m docqa test
+      - name: Offline evaluation smoke test
+        run: python -m docqa eval --smoke
